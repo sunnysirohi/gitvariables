@@ -9,4 +9,4 @@ jobs:
     steps:
       - name: Display variable
         run:
-          echo ${{NAME}}
+          echo ${{env.NAME}}
