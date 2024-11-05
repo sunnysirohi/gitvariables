@@ -4,10 +4,10 @@ on:
 jobs:
   job1:
     env:
-      NAME: "Sarah"
+      ENV_NAME: "Harry"
     runs-on: ubuntu-latest
     steps:
       - name: Display variable
         run: |
-          echo ${{env.NAME}}
-          echo ${{vars.WORK}}
+          echo ${{env.ENV_NAME}}
+          echo ${{vars.NAME}}
