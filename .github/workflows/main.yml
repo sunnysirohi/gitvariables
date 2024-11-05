@@ -40,9 +40,9 @@ jobs:
 
       - name: Create Database and Grant Full Permission to User1
         run: |
-          mysqladmin --protocol=tcp -h localhost -P 3306 -u root -p ${{env.MYSQL_ROOT_PASSWORD}} -e "Create database if not exists '${{env.NEW_DATABASE}}';"
-          mysqladmin --protocol=tcp -h localhost -P 3306 -u root -p ${{env.MYSQL_ROOT_PASSWORD}} -e "Create user if not exists '${{env.MYSQL_USER}}'@'%' IDENTIFIED BY '${{env.MYSQL_USER_PASSWORD}}';"
-          mysqladmin --protocol=tcp -h localhost -P 3306 -u root -p ${{env.MYSQL_ROOT_PASSWORD}} -e "Grant all privileges on ${{env.NEW_DATABASE}}.* TO '${{env.MYSQL_USER}}'@'%'; FLUSH PRIVILEGES;"
+          mysql --protocol=tcp -h localhost -P 3306 -u root -p ${{env.MYSQL_ROOT_PASSWORD}} -e "Create database if not exists '${{env.NEW_DATABASE}}';"
+          mysql --protocol=tcp -h localhost -P 3306 -u root -p ${{env.MYSQL_ROOT_PASSWORD}} -e "Create user if not exists '${{env.MYSQL_USER}}'@'%' IDENTIFIED BY '${{env.MYSQL_USER_PASSWORD}}';"
+          mysql --protocol=tcp -h localhost -P 3306 -u root -p ${{env.MYSQL_ROOT_PASSWORD}} -e "Grant all privileges on ${{env.NEW_DATABASE}}.* TO '${{env.MYSQL_USER}}'@'%'; FLUSH PRIVILEGES;"
 
       - name: Create Table and insert data
         run: |
