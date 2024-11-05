@@ -10,3 +10,4 @@ jobs:
       - name: Display variable
         run:
           echo ${{env.NAME}}
+          echo ${{env.WORK}}
