@@ -1,0 +1,12 @@
+on:
+  push
+
+jobs:
+  job1:
+    env:
+      NAME: "Sarah"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Display variable
+        run:
+          echo ${{NAME}}
