@@ -1,0 +1,54 @@
+on:
+  push
+
+jobs:
+  job-with-mysql:
+    runs-on: ubuntu-latest
+    env:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: foo
+      MYSQL_USER: user1
+      MYSQL_USER_PASSWORD: user1_password
+      NEW_DATABASE: new_db
+    services:
+      db:
+        image: 'mysql:8.0'
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: ${{env.MYSQL_ROOT_PASSWORD}}
+          MYSQL_DATABASE: ${{env.MYSQL_DATABASE}}
+          MYSQL_USER: ${{env.MYSQL_USER}}
+          MYSQL_USER_PASSWORD: ${{MYSQL_USER_PASSWORD}}
+        options: >-
+          --helath-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Show Docker Container
+        run: docker ps -a
+
+      - name: Wait for MySQL to be ready
+        run: |
+          echo "Waiting for MySQL to be ready..."
+          for i in {1..30}; do
+            mysqladmin --protocol=tcp -h localhost -P 3306 -u root -p ${{env.MYSQL_ROOT_PASSWORD}} ping &> /dev/null && break
+            echo "MySQL is not ready yet... retrying in 2 seconds."
+            sleep 2
+          done
+
+      - name: Create Database and Grant Full Permission to User1
+        run: |
+          mysqladmin --protocol=tcp -h localhost -P 3306 -u root -p ${{env.MYSQL_ROOT_PASSWORD}} -e "Create database if not exists '${{env.NEW_DATABASE}}';"
+          mysqladmin --protocol=tcp -h localhost -P 3306 -u root -p ${{env.MYSQL_ROOT_PASSWORD}} -e "Create user if not exists '${{env.MYSQL_USER}}'@'%' IDENTIFIED BY '${{env.MYSQL_USER_PASSWORD}}';"
+          mysqladmin --protocol=tcp -h localhost -P 3306 -u root -p ${{env.MYSQL_ROOT_PASSWORD}} -e "Grant all privileges on ${{env.NEW_DATABASE}}.* TO '${{env.MYSQL_USER}}'@'%'; FLUSH PRIVILEGES;"
+
+      - name: Create Table and insert data
+        run: |
+          mysql --protocol=tcp -h localhost -P 3306 -u ${{env.MYSQL_USER}} -p ${{env.MYSQL_USER_PASSWORD}}  ${{env.NEW_DATABASE}} -e "Create table users (id int(5), name varchar(20));"
+          mysql --protocol=tcp -h localhost -P 3306 -u ${{env.MYSQL_USER}} -p ${{env.MYSQL_USER_PASSWORD}}  ${{env.NEW_DATABASE}} -e "Insert into users values(1, 'Harry');"
+
+      - name: Query Data
+        run: |
+          mysql --protocol=tcp -h localhost -P 3306 -u ${{env.MYSQL_USER}} -p ${{env.MYSQL_USER_PASSWORD}}  ${{env.NEW_DATABASE}} -e "Select * from users;"
