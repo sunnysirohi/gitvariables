@@ -6,10 +6,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: foo
+      MYSQL_DATABASE: mysql
       MYSQL_USER: user1
       MYSQL_USER_PASSWORD: user1_password
-      NEW_DATABASE: new_db
+      NEW_DATABASE: mysql
     services:
       db:
         image: 'mysql:8.0'
@@ -40,7 +40,7 @@ jobs:
 
       - name: Create Database and Grant Full Permission to User1
         run: |
-          mysql --protocol=tcp -h '172.18.0.1' -P 3306 -u root -p ${{env.MYSQL_ROOT_PASSWORD}} -e "Create database if not exists '${{env.NEW_DATABASE}}';"
+          #mysql --protocol=tcp -h localhost -P 3306 -u root -p ${{env.MYSQL_ROOT_PASSWORD}} -e "Create database if not exists '${{env.NEW_DATABASE}}';"
           mysql --protocol=tcp -h localhost -P 3306 -u root -p ${{env.MYSQL_ROOT_PASSWORD}} -e "Create user if not exists '${{env.MYSQL_USER}}'@'%' IDENTIFIED BY '${{env.MYSQL_USER_PASSWORD}}';"
           mysql --protocol=tcp -h localhost -P 3306 -u root -p ${{env.MYSQL_ROOT_PASSWORD}} -e "Grant all privileges on ${{env.NEW_DATABASE}}.* TO '${{env.MYSQL_USER}}'@'%'; FLUSH PRIVILEGES;"
 
