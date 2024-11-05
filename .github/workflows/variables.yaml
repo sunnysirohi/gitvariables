@@ -5,10 +5,9 @@ jobs:
   job1:
     env:
       NAME: "Sarah"
-      WORK: ${{env.WORK}}
     runs-on: ubuntu-latest
     steps:
       - name: Display variable
         run: |
           echo ${{env.NAME}}
-          echo ${{WORK}}
+          echo ${{test.WORK}}
